@@ -79,7 +79,7 @@ exactly the same prime divisors: `C(174,87)` and `C(176,88)` do. -/
 theorem jsp598 :
     ∃ n m : ℕ, 1 ≤ n ∧ n < m ∧ cbcSupp n = cbcSupp m := by
   refine ⟨87, 88, by decide, by decide, ?_⟩
-  exact cbcSupp_87.trans cbcSupp_88.symm
+  exact cbcSupp_87_eq_88_structured
 
 /-- The two coefficients are distinct numbers (only their prime-divisor
 *sets* coincide; the multiplicities differ, e.g. v₂ = 5 vs v₂ = 3). -/
