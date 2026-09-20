@@ -11,18 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
-        with:
-          auto-config: false
-          build: "lake build"
       - name: Axiom audit
         run: |
-          cat > Audit.lean << 'LEAN'
-          import JSP000288
-          import JSP000301
-          import JSP000598
-          #print axioms jsp_000288
-          #print axioms counterexample
-          #print axioms jsp598
-          LEAN
-          sed -i 's/^          //' Audit.lean
+          printf 'import JSP000288\nimport JSP000301\nimport JSP000598\n#print axioms jsp_000288\n#print axioms counterexample\n#print axioms jsp598\n' > Audit.lean
           lake env lean Audit.lean
