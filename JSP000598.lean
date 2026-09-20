@@ -74,13 +74,6 @@ theorem cbcSupp_88 :
       103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173} := by
   native_decide
 
-/-- **JSP-000598.** Two distinct central binomial coefficients *can* have
-exactly the same prime divisors: `C(174,87)` and `C(176,88)` do. -/
-theorem jsp598 :
-    ∃ n m : ℕ, 1 ≤ n ∧ n < m ∧ cbcSupp n = cbcSupp m := by
-  refine ⟨87, 88, by decide, by decide, ?_⟩
-  exact cbcSupp_87_eq_88_structured
-
 /-- The two coefficients are distinct numbers (only their prime-divisor
 *sets* coincide; the multiplicities differ, e.g. v₂ = 5 vs v₂ = 3). -/
 theorem jsp598_distinct_values : Nat.choose 174 87 ≠ Nat.choose 176 88 := by
@@ -256,6 +249,13 @@ theorem cbcSupp_87_eq_88_structured : cbcSupp 87 = cbcSupp 88 := by
   exact jsp598_scaled jsp598_scaling hk hj
     (Nat.choose_pos (by decide : 87 ≤ 174)).ne'
     (Nat.choose_pos (by decide : 88 ≤ 176)).ne'
+
+/-- **JSP-000598.** Two distinct central binomial coefficients *can* have
+exactly the same prime divisors: `C(174,87)` and `C(176,88)` do. -/
+theorem jsp598 :
+    ∃ n m : ℕ, 1 ≤ n ∧ n < m ∧ cbcSupp n = cbcSupp m := by
+  refine ⟨87, 88, by decide, by decide, ?_⟩
+  exact cbcSupp_87_eq_88_structured
 
 /-! ## Section C — sanity checks -/
 
