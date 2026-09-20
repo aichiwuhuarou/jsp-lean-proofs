@@ -161,14 +161,77 @@ theorem jsp598_prime_dvd_seven {p : ℕ} (hp : p.Prime) (h : p ∣ 7) : p = 7 :=
 /-- The scaling identity `44 * C(176,88) = 175 * C(174,87)`.
 (Instantiation of `C(2n+2,n+1) * (n+1) = 2(2n+1) * C(2n,n)` at `n = 87`,
 checked numerically.) -/
+
+-- Kernel-clean replacements (Kummer carries + symbolic scaling), removing all native_decide
+-- from the main dependency chain of `jsp598`.
+
+theorem prime_dvd_choose_of_carry (p n k b : ℕ) (hp : p.Prime) (hkn : k ≤ n)
+    (hnb : Nat.log p n < b)
+    (i : ℕ) (hi1 : 1 ≤ i) (hib : i < b)
+    (hcarry : p ^ i ≤ k % p ^ i + (n - k) % p ^ i) :
+    p ∣ Nat.choose n k := by
+  rw [Nat.Prime.dvd_iff_one_le_factorization hp (Nat.choose_pos hkn).ne',
+    Nat.factorization_choose hp hkn hnb]
+  have hmem : i ∈ (Finset.Ico 1 b).filter (fun j => p ^ j ≤ k % p ^ j + (n - k) % p ^ j) := by
+    simp only [Finset.mem_filter, Finset.mem_Ico]
+    exact ⟨⟨hi1, hib⟩, hcarry⟩
+  exact Nat.one_le_iff_ne_zero.mpr (by
+    intro hzero
+    rw [Finset.card_eq_zero.mp hzero] at hmem
+    simp at hmem)
+
+theorem choose_two_n_scaling (n : ℕ) :
+    Nat.choose (2 * n + 2) (n + 1) * (n + 1) = 2 * (2 * n + 1) * Nat.choose (2 * n) n := by
+  have hkn1 : n + 1 ≤ 2 * n + 2 := by omega
+  have hkn : n ≤ 2 * n := by omega
+  have h1 := Nat.choose_mul_factorial_mul_factorial hkn1
+  rw [show 2 * n + 2 - (n + 1) = n + 1 from by omega] at h1
+  have h2 := Nat.choose_mul_factorial_mul_factorial hkn
+  rw [show 2 * n - n = n from by omega] at h2
+  have e1 : (2 * n + 2).factorial = (2 * n + 2) * ((2 * n + 1) * (2 * n).factorial) := by
+    rw [Nat.factorial_succ, Nat.factorial_succ]
+  have e2 : (n + 1).factorial = (n + 1) * n.factorial := Nat.factorial_succ n
+  rw [e1, e2] at h1
+  have hpos : 0 < (n + 1) * (n.factorial * n.factorial) := by positivity
+  apply Nat.mul_right_cancel hpos
+  calc Nat.choose (2 * n + 2) (n + 1) * (n + 1)
+        * ((n + 1) * (n.factorial * n.factorial))
+      = Nat.choose (2 * n + 2) (n + 1) * ((n + 1) * n.factorial)
+        * ((n + 1) * n.factorial) := by ring
+    _ = (2 * n + 2) * ((2 * n + 1) * (2 * n).factorial) := h1
+    _ = 2 * (2 * n + 1) * Nat.choose (2 * n) n
+        * ((n + 1) * (n.factorial * n.factorial)) := by
+        rw [← h2]
+        ring
+
 theorem jsp598_scaling :
     Nat.choose 176 88 * 44 = 175 * Nat.choose 174 87 := by
-  native_decide
+  have h := choose_two_n_scaling 87
+  -- h : C(176,88) * 88 = 2 * (2*87+1) * C(174,87), i.e. C * 88 = 350 * A
+  apply Nat.mul_right_cancel (by decide : (0 : ℕ) < 2)
+  calc Nat.choose 176 88 * 44 * 2
+      = Nat.choose 176 88 * 88 := by ring
+    _ = 2 * (2 * 87 + 1) * Nat.choose 174 87 := by
+        rw [show 2 * 87 + 1 = 175 from by norm_num]
+        exact h
+    _ = 175 * Nat.choose 174 87 * 2 := by ring
 
-theorem jsp598_dvd_two_88 : 2 ∣ Nat.choose 176 88 := by native_decide
-theorem jsp598_dvd_eleven_88 : 11 ∣ Nat.choose 176 88 := by native_decide
-theorem jsp598_dvd_five_87 : 5 ∣ Nat.choose 174 87 := by native_decide
-theorem jsp598_dvd_seven_87 : 7 ∣ Nat.choose 174 87 := by native_decide
+theorem jsp598_dvd_two_88 : 2 ∣ Nat.choose 176 88 := by
+  refine prime_dvd_choose_of_carry 2 176 88 8 (by decide) (by decide) (by decide) 4
+    (by decide) (by decide) ?_
+  decide
+theorem jsp598_dvd_eleven_88 : 11 ∣ Nat.choose 176 88 := by
+  refine prime_dvd_choose_of_carry 11 176 88 3 (by decide) (by decide) (by decide) 2
+    (by decide) (by decide) ?_
+  decide
+theorem jsp598_dvd_five_87 : 5 ∣ Nat.choose 174 87 := by
+  refine prime_dvd_choose_of_carry 5 174 87 4 (by decide) (by decide) (by decide) 3
+    (by decide) (by decide) ?_
+  decide
+theorem jsp598_dvd_seven_87 : 7 ∣ Nat.choose 174 87 := by
+  refine prime_dvd_choose_of_carry 7 174 87 3 (by decide) (by decide) (by decide) 2
+    (by decide) (by decide) ?_
+  decide
 
 /-- Structured proof that `C(174,87)` and `C(176,88)` have the same
 prime-divisor set: scaling by `175 / 44` only reweights primes already
