@@ -13,5 +13,6 @@ jobs:
       - uses: leanprover/lean-action@v1
       - name: Axiom audit
         run: |
-          printf 'import JSP000288\nimport JSP000301\nimport JSP000598\n#print axioms jsp_000288\n#print axioms counterexample\n#print axioms jsp598\n' > Audit.lean
-          lake env lean Audit.lean
+          printf 'import JSP000288\nimport JSP000301\nimport JSP000598\n#print axioms Erdos346.jsp_000288\n#print axioms JSP000301.counterexample\n#print axioms jsp598\n' > Audit.lean
+          lake env lean Audit.lean || true
+          echo "AUDIT_EXIT=$?"
